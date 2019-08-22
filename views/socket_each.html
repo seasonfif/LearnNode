@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>how to use socket</title>
+    <script src='https://code.jquery.com/jquery-1.11.1.js'></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<form action="#" id="form">
+    <input type="text" id="message">
+    <button id="send">send</button>
+</form>
+<p> log: </p>
+<div id="stdout"
+     style="width:90%;
+     float:left;
+     background: cadetblue;
+     margin-left: 5%;
+     white-space: pre-line;
+     padding-left: 30px;
+     padding-right: 30px;
+     padding-bottom: 30px;"
+>
+</div>
+<div id="stderr"
+     style="width:90%;
+     float:left;
+     background: cadetblue;
+     margin-top:50px;
+     margin-left: 5%;
+     white-space: pre-line;
+     padding-left: 30px;
+     padding-right: 30px;
+     padding-bottom: 30px;">
+</div>
+<script>
+    // 1. 与服务器端建立连接
+    const socket = io.connect("http://localhost:3000");
+    console.log(socket)
+    // 2. 监听send按钮点击的事件
+    $("#send").click(function(){
+        // 获取输入的信息
+        let message = $("#message").val().trim();
+        console.log(message)
+        // 向服务器端发送信息
+        socket.emit("sentToServer", message);
+    });
+
+    // 3. 获取服务端发送过来的信息
+    socket.on("stdout", message => {
+        console.log(message);
+        // $("#message").val(message)
+        // $('p').append(message)
+        /*var div = document.getElementById("content");
+        div.innerText += (message + '<br>')*/
+        $('#stdout').append(message)
+    });
+
+    socket.on("stderr", message => {
+        console.log(message);
+        $('#stderr').append(message)
+    });
+    /**
+     * 发布订阅(广播), 一端发布, 可以让多端触发
+     */
+</script>
+</body>
+</html>
